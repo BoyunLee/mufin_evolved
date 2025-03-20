@@ -35,7 +35,7 @@ const StockDetailTabs = ({ symbol, initialPrice }: StockDetailTabsProps) => {
     if (tabParam && ['chart', 'orderbook', 'info'].includes(tabParam)) {
       setActiveTab(tabParam as TabType);
     } else {
-      router.push(`/stock/${symbol}?tab=chart`);
+      router.replace(`/stock/${symbol}?tab=chart`);
     }
   }, [searchParams, symbol, router]);
 
