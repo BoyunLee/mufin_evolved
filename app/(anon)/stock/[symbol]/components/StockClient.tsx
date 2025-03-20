@@ -36,7 +36,7 @@ const StockClientPage: React.FC<StockClientProps> = ({ symbol, initialStockData 
 
   const currentType = "currentPrice";
 
-  // ✅ 1. 초기 데이터 설정 (불필요한 API 호출 제거)
+  // ✅ 1. 초기 데이터 설정
   useEffect(() => {
     setStockPrice(initialStockData.stockPrice);
     setPrdyVrss(initialStockData.prdyVrss);
@@ -90,26 +90,23 @@ const StockClientPage: React.FC<StockClientProps> = ({ symbol, initialStockData 
   }, [symbol]);
 
   // ✅ 4. 시장이 열려 있을 때 WebSocket 실행
+  // ✅ 5. 주식 시장 상태를 1분마다 체크
   useEffect(() => {
-    if (isMarketOpen) {
+  const interval = setInterval(() => {
+    const marketStatus = marketOpen();
+    setIsMarketOpen(marketStatus);
+    if (marketStatus) {
       initializeWebSocket();
     } else {
       cleanupWebSocket();
     }
+  }, 60000); 
 
-    return () => {
-      cleanupWebSocket();
-    };
-  }, [isMarketOpen, symbol, initializeWebSocket, cleanupWebSocket]);
-
-  // ✅ 5. 주식 시장 상태를 1분마다 체크
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIsMarketOpen(marketOpen());
-    }, 60000);
-
-    return () => clearInterval(interval);
-  }, []);
+  return () => {
+    clearInterval(interval);  
+    cleanupWebSocket(); 
+  };
+  }, [symbol, initializeWebSocket, cleanupWebSocket]);
 
   return (
     <>
