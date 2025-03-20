@@ -45,7 +45,7 @@ const StockDetailTabs = ({ symbol, initialPrice }: StockDetailTabsProps) => {
   };
 
   const handleTradeClick = () => {
-    if (marketOpen()) {
+    if (!marketOpen()) {
       setIsModalOpen(true);
     } else {
       sessionStorage.setItem('initialPrice', initialPrice);
