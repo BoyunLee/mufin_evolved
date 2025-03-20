@@ -1,0 +1,192 @@
+# 워크 플로우 이름 : 우분투 서버에서 빌드와 배포를 위한 워크 플로우
+name: 'Build and Deploy to Ubuntu Server Run'
+
+# master 브랜치에 push 가 발생하면 jobs가 실행되도록 이벤트 설정
+on:
+   push:
+    branches:
+          - main # master 브랜치에 push 가 발생하면
+          - deploy
+
+  # 위에 설정된 push 이벤트를 실행할 job들의 순서를 정한다.
+jobs:
+  # 각 단계는 순서대로 실행되는 것이 아니며 반드시 모든 단계를 포함할 필요도 없다
+
+  # 첫번째 단계 : 빌드
+  build:
+      runs-on: ubuntu-latest
+          
+
+      steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+           clean: true  
+
+      - name: Create .env file
+        run: |
+         echo "Creating .env file..."
+         rm -f .env  # 기존 파일 삭제
+         cat <<-EOF > .env
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            NEXT_PUBLIC_BASE_URL=${{ secrets.NEXT_PUBLIC_BASE_URL }}
+            REDIS_URL=${{ secrets.REDIS_URL }}
+            NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
+            KIS_API_URL=${{ secrets.KIS_API_URL }}
+            KIS_API_MOCK_URL=${{ secrets.KIS_API_MOCK_URL }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            SMTP_EMAIL_USER=${{ secrets.SMTP_EMAIL_USER }}
+            SMTP_EMAIL_PASSWORD=${{ secrets.SMTP_EMAIL_PASSWORD }}
+            KIS_APP_KEY_1=${{ secrets.KIS_APP_KEY_1 }}
+            KIS_APP_KEY_2=${{ secrets.KIS_APP_KEY_2 }}
+            KIS_APP_SECRET_1=${{ secrets.KIS_APP_SECRET_1 }}
+            KIS_APP_SECRET_2=${{ secrets.KIS_APP_SECRET_2 }}
+            ORDER_BOOK_KIS_API_KEY_1=${{ secrets.ORDER_BOOK_KIS_API_KEY_1 }}
+            ORDER_BOOK_KIS_API_KEY_2=${{ secrets.ORDER_BOOK_KIS_API_KEY_2 }}
+            ORDER_BOOK_KIS_SECRET_1=${{ secrets.ORDER_BOOK_KIS_SECRET_1 }}
+            ORDER_BOOK_KIS_SECRET_2=${{ secrets.ORDER_BOOK_KIS_SECRET_2 }}
+         EOF
+         cat .env
+
+      # 2. 패키지 매니저 감지(yarn 또는 npm)
+      - name: Detect package manager
+        id: detect-package-manager
+        run: |
+          if [ -f "${{ github.workspace }}/yarn.lock" ]; then
+            echo "manager=yarn" >> $GITHUB_OUTPUT
+            echo "command=install" >> $GITHUB_OUTPUT
+            echo "runner=yarn" >> $GITHUB_OUTPUT
+            exit 0
+          elif [ -f "${{ github.workspace }}/package.json" ]; then
+            echo "manager=npm" >> $GITHUB_OUTPUT
+            echo "command=ci" >> $GITHUB_OUTPUT
+            echo "runner=npx --no-install" >> $GITHUB_OUTPUT
+            exit 0
+          else
+            echo "Unable to determine package manager"
+            exit 1
+          fi
+      
+      # 3. Node.js 환경 설정
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: ${{ steps.detect-package-manager.outputs.manager }}
+          
+      # 4. 의존성 설치
+      - name: Install dependencies
+        run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
+      
+      #5 Prisma Client 생성
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Load environment variables
+        run: export $(grep -v '^#' .env | xargs)
+
+      # 6. Next.js 애플리케이션 빌드
+      - name: Build with Next.js
+        run: ${{ steps.detect-package-manager.outputs.runner }} next build
+
+        
+  # 세번째 단계: 배포
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+     # 2. 패키지 매니저 감지(yarn 또는 npm)
+      - name: Detect package manager
+        id: detect-package-manager
+        run: |
+          if [ -f "${{ github.workspace }}/yarn.lock" ]; then
+            echo "manager=yarn" >> $GITHUB_OUTPUT
+            echo "command=install" >> $GITHUB_OUTPUT
+            echo "runner=yarn" >> $GITHUB_OUTPUT
+            exit 0
+          elif [ -f "${{ github.workspace }}/package.json" ]; then
+            echo "manager=npm" >> $GITHUB_OUTPUT
+            echo "command=ci" >> $GITHUB_OUTPUT
+            echo "runner=npx --no-install" >> $GITHUB_OUTPUT
+            exit 0
+          else
+            echo "Unable to determine package manager"
+            exit 1
+          fi
+          
+           # 10. SSH를 통해 Linux 서버에 배포
+      - name: Deploy to Remote Server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}             
+          username: ${{ secrets.SSH_USER }}           
+          port: 23                    	  
+          key: ${{ secrets.SSH_PRIVATE_KEY}}
+          script: |
+            cd ~
+
+             # 리포지토리 확인 후 처리
+            if [ ! -d "/home/mufindata/www/mufin/.git" ]; then
+              echo "리포지토리가 없습니다. 클론을 진행합니다..."
+              git clone --depth=1 https://github.com/FRONT-END-BOOTCAMP-PLUS-3/mufin.git
+            else
+              echo "리포지토리가 존재합니다. 최신 코드 가져오기..."
+              cd /home/mufindata/www/mufin
+              git fetch origin main
+              if ! git diff --quiet HEAD origin/main; then
+                git reset --hard origin/main
+                git checkout main
+              else
+                echo "변경 사항 없음"
+              fi
+            fi
+
+            cd /home/mufindata/www/mufin
+
+            
+            echo "Creating .env file..."
+            rm -f .env  # 기존 파일 삭제
+            cat << EOF > .env
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            NEXT_PUBLIC_BASE_URL=${{ secrets.NEXT_PUBLIC_BASE_URL }}
+            REDIS_URL=${{ secrets.REDIS_URL }}
+            NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
+            KIS_API_URL=${{ secrets.KIS_API_URL }}
+            KIS_API_MOCK_URL=${{ secrets.KIS_API_MOCK_URL }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            SMTP_EMAIL_USER=${{ secrets.SMTP_EMAIL_USER }}
+            SMTP_EMAIL_PASSWORD=${{ secrets.SMTP_EMAIL_PASSWORD }}
+            KIS_APP_KEY_1=${{ secrets.KIS_APP_KEY_1 }}
+            KIS_APP_KEY_2=${{ secrets.KIS_APP_KEY_2 }}
+            KIS_APP_SECRET_1=${{ secrets.KIS_APP_SECRET_1 }}
+            KIS_APP_SECRET_2=${{ secrets.KIS_APP_SECRET_2 }}
+            ORDER_BOOK_KIS_API_KEY_1=${{ secrets.ORDER_BOOK_KIS_API_KEY_1 }}
+            ORDER_BOOK_KIS_API_KEY_2=${{ secrets.ORDER_BOOK_KIS_API_KEY_2 }}
+            ORDER_BOOK_KIS_SECRET_1=${{ secrets.ORDER_BOOK_KIS_SECRET_1 }}
+            ORDER_BOOK_KIS_SECRET_2=${{ secrets.ORDER_BOOK_KIS_SECRET_2 }}
+            EOF
+
+            npm cache clean --force
+            npm ci
+            npm run build
+            
+            # 배포 시 redis 내부 값 초기화 작업
+            redis-cli -u redis://default:w96dDptlVAR3KOg5z1nmYA6WBqAcfTaV@redis-14704.c340.ap-northeast-2-1.ec2.redns.redis-cloud.com:14704
+            EVAL "for i = 1, #KEYS do local current_data = redis.call('GET', KEYS[i]) if current_data then local decoded_data = cjson.decode(current_data) decoded_data.in_use = (ARGV[1] == 'true') local updated_data = cjson.encode(decoded_data) local ttl = redis.call('TTL', KEYS[i]) if ttl > 0 then redis.call('SET', KEYS[i], updated_data, 'EX', ttl) else redis.call('SET', KEYS[i], updated_data) end end end" 4 "KIS_APP_KEY_1:PSfbMSwC8yQtkh73MjfDov2FXiryym7rKhnU" "KIS_APP_KEY_2:PSaLz49IqlGB4VeKsUSHYb3swP8c7CKL0lLK" "ORDER_BOOK_KIS_API_KEY_1:PSWDAuZGIG8ZMD0Lv8fJBX3lKVQ5XvKdrYI6" "ORDER_BOOK_KIS_API_KEY_2:PSqhAbVk3FPqXtIieSDE330ghKYNCgGJrJLr" "false"
+
+             # PM2 프로세스 확인 후 처리
+            if pm2 list | grep -q 'mufin'; then
+              echo "프로세스가 실행 중입니다. Reload 진행..."
+              pm2 restart mufin
+            else
+              echo "프로세스가 실행 중이 아닙니다. 새로 실행합니다..."
+              pm2 start npm --name "mufin" -- run start -- -p 3060
+              pm2 save
+            fi
+
+      # - name: Deploy Next.js Project
+      #   run: ~/next-mufin-update.sh
