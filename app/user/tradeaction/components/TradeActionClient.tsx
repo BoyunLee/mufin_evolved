@@ -70,14 +70,12 @@ const TradeActionClient = () => {
   
     const fetchStockIdName = async () => {
       try {
-        console.log("API 호출 전");
         const response = await fetch(`/api/stock/stock_info?symbol=${symbol}`);
         if (!response.ok) {
           throw new Error('주식 데이터를 불러오는 데 실패했습니다.');
         }
   
         const data: StockData = await response.json();
-        console.log("Stock ID and Name:", data);
         setStockId(data.stockId);
         setStockName(data.stockName);
       } catch (error) {
@@ -97,7 +95,6 @@ const TradeActionClient = () => {
       try {
         const walletResponse = await fetch(`/api/tradeaction/buy`);
         const walletData = await walletResponse.json();
-        console.log("Fetched walletData:", walletData);
         setWalletBalance(Number(walletData.cash));
   
         const portfolioResponse = await fetch(`/api/tradeaction/sell?stockId=${stockId}`);
