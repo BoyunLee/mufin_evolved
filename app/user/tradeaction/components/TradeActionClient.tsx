@@ -28,7 +28,7 @@ const TradeActionClient = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const symbol = searchParams.get("symbol") || "";
-  const initialPriceValue = Number(searchParams.get("initialPrice")) || 0;
+  const [initialPriceValue, setInitialPriceValue] = useState<number>(0);
   const type = searchParams.get("type") || "buy";
 
   const [quantity, setQuantity] = useState<number | undefined>(undefined);
@@ -39,6 +39,15 @@ const TradeActionClient = () => {
 
 
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const storedPrice = sessionStorage.getItem('initialPrice');
+    if (!storedPrice) {
+      router.push(`/stock/${symbol}`);
+      return;
+    }
+    setInitialPriceValue(Number(storedPrice));
+  }, [router, symbol]);
 
   useEffect(() => {
     setActiveTab(type);
@@ -62,7 +71,7 @@ const TradeActionClient = () => {
     const fetchStockIdName = async () => {
       try {
         console.log("API 호출 전");
-        const response = await fetch(`/api/stock/stock_info?symbol=${symbol}`);
+        const response = await fetch(`/api/stock/stock-info?symbol=${symbol}`);
         if (!response.ok) {
           throw new Error('주식 데이터를 불러오는 데 실패했습니다.');
         }
