@@ -1,17 +1,12 @@
 import { LogoWrapper, StockChange, StockImage, StockItemBox, StockLeft, StockLink, StockName, StockPrice, StockRight } from "@/app/components/home/StockList.Styled";
 import { StockListResponseDto } from "@/application/usecases/home/dtos/StockListResponseDto";
 
-import { env } from "@/config/env";
-
 interface StockListProps {
   path: string;
 }
 
 async function fetchStocks(path: string): Promise<StockListResponseDto[]> {
-  const res = await fetch(`${env.NEXT_PUBLIC_BASE_URL}${path}`, {
-    cache: "no-store",
-  });
-
+  const res = await fetch(path, { cache: "no-store" });
   return await res.json();
 }
 
