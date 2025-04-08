@@ -24,7 +24,7 @@ export async function GET() {
     const results = await Promise.all(
       stockCodes.map((stockCode) => getHomeDataUseCase.execute(stockCode))
     );
-
+    
     if (results.length === 0) {
       return NextResponse.json(
         { error: "요청 데이터의 정보가 없습니다." },

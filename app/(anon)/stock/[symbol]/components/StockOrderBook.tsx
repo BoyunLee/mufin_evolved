@@ -43,7 +43,7 @@ const StockOrderBook = ({ symbol }: StockOrderBookProps) => {
   // ✅ 1. 초기 데이터 설정 (API 요청하여 데이터 가져오기)
   const fetchData = useCallback(async () => {
     try {
-      const response = await fetch(`/api/stock/order_book?symbol=${symbol}`);
+      const response = await fetch(`/api/stock/order-book?symbol=${symbol}`);
       const result = await response.json();
       if (response.ok) {
         setData(result);
