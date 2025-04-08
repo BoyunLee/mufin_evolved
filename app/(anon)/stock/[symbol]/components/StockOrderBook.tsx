@@ -32,7 +32,7 @@ const StockOrderBook = ({ symbol }: StockOrderBookProps) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`/api/stock/order_book?symbol=${symbol}`);
+        const response = await fetch(`/api/stock/order-book?symbol=${symbol}`);
         const result = await response.json();
         if (response.ok) {
           setData(result);
@@ -97,7 +97,7 @@ const StockOrderBook = ({ symbol }: StockOrderBookProps) => {
                   </Price>
                   <OrderDetails>
                     <OrderBar
-                      className="ask"
+                      $className="ask"
                       width={(askVolumes[5 - i] / totalAskVolume) * 100 || 0}
                     />
                     <Volume $className="ask">
@@ -117,7 +117,7 @@ const StockOrderBook = ({ symbol }: StockOrderBookProps) => {
                   </Price>
                   <OrderDetails>
                     <OrderBar
-                      className="bid"
+                      $className="bid"
                       width={(bidVolumes[i - 6] / totalBidVolume) * 100 || 0}
                     />
                     <Volume $className="bid">
