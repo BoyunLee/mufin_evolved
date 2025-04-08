@@ -20,7 +20,6 @@ const quizPage = async () => {
     cache: "no-store",
   });
   const data = (await res.json()) as QuizPageProps;
-  console.log("Test:",data.quiz);
 
   return <Quiz quiz = {data.quiz}/>;
 };
