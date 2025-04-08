@@ -15,12 +15,11 @@ import {
 import { fetchApprovalKey } from "@/utils/fetchApprovalKey";
 import { parseStockData } from "@/utils/parseStockData";
 import { REQUIRED_STOCK_FIELD, STOCK_TRADE_MAPPING } from "@/constants/realTimeStockMapping";
+import { useParams } from "next/navigation";
 
-interface StockClientProps {
-  symbol: string;
-}
-
-const StockClientPage: React.FC<StockClientProps> = ({ symbol }) => {
+const StockClientPage: React.FC = () => {
+  const params = useParams();
+  const symbol = params?.symbol as string;
   const [stockPrice, setStockPrice] = useState<string>("");
   const [prdyVrss, setPrdyVrss] = useState<string>("");
   const [prdyCtrt, setPrdyCtrt] = useState<string>("");
