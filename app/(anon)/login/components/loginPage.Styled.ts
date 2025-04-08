@@ -25,6 +25,17 @@ export const LoginBox = styled.div`
     gap: 1rem;
     align-items: center;
   }
+  p {
+    width: 90%;
+    margin-top: 10px;
+    text-align: right;
+
+    display: flex;
+    justify-content: flex-end;
+    align-items: center; 
+    gap: 2px; 
+    color: var(--gray-700);
+  } 
 `;
 
 export const Input = styled.input`
