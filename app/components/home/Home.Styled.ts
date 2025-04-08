@@ -40,7 +40,7 @@ export const IntroBox = styled.div`
 
     p {
         display: flex;
-        font-size: var(--font-size-md);
+        font-size: var(--font-size-sm);
         color: var(--black-color);
         word-break: break-word;
         white-space: pre-wrap;
@@ -62,7 +62,7 @@ export const QuizButton = styled.button`
     border-radius: 10px;
     border: none;
 
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-md);
     font-weight: bold;
     text-align: center;
 

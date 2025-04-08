@@ -26,7 +26,7 @@ const StockCategory = () => {
                       color={category.color} 
                       href={{ pathname: "/category", query: { c: category.id } }}
                   >
-                              <Image src={category.image} alt={category.name} width={80} height={80} />
+                        <Image src={category.image} alt={category.name} width={65} height={65} />
                       </CategoryCard>
                       <CategoryName>{category.name}</CategoryName>
                   </CategoryWrapper>
