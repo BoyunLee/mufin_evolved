@@ -3,13 +3,19 @@ import styled from "styled-components";
 
 export const Container = styled.div`
     display: grid;
-    flex-direction: column;
-    width: 100%;
-    margin-bottom: 10px;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin-top: 0.75rem;
+    gap: 2rem;
+    margin: 0.75rem 0 10px;
+
+    @media (max-width: 485px) {
+        gap: 1.5rem;
+    }
+
+    @media (max-width: 390px) {
+        gap: 1rem;
+    }
 `;
+
 
 export const CategoryWrapper = styled.div`
     display: flex;
@@ -28,7 +34,18 @@ export const CategoryName = styled.span`
 export const CategoryCard = styled(Link)<{ color: string }>`
     width: 6.5rem;
     height: 6.5rem;
-    background-color: ${({ color }) => color}; /* 각 카드의 배경색 */
+
+    @media (max-width: 485px) {
+        width: 6rem;
+        height: 6rem;
+    }
+
+    @media (max-width: 380px) {
+        width: 5rem;
+        height: 5rem;
+    }
+
+    background-color: ${({ color }) => color};
     display: flex;
     flex-direction: column;
     align-items: center;

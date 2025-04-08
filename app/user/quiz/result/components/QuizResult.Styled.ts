@@ -50,6 +50,6 @@ export const ResultTopWrapper = styled.div`
 export const ButtonWrapper = styled.div`
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.3rem;
     width: 100%;
 `;
