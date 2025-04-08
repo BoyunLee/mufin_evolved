@@ -18,17 +18,12 @@ import { REQUIRED_STOCK_FIELD, STOCK_TRADE_MAPPING } from "@/constants/realTimeS
 
 interface StockClientProps {
   symbol: string;
-  initialStockData: {
-    stockPrice: string;
-    prdyVrss: string;
-    prdyCtrt: string;
-  };
 }
 
-const StockClientPage: React.FC<StockClientProps> = ({ symbol, initialStockData }) => {
-  const [stockPrice, setStockPrice] = useState(initialStockData.stockPrice);
-  const [prdyVrss, setPrdyVrss] = useState(initialStockData.prdyVrss);
-  const [prdyCtrt, setPrdyCtrt] = useState(initialStockData.prdyCtrt);
+const StockClientPage: React.FC<StockClientProps> = ({ symbol }) => {
+  const [stockPrice, setStockPrice] = useState<string>("");
+  const [prdyVrss, setPrdyVrss] = useState<string>("");
+  const [prdyCtrt, setPrdyCtrt] = useState<string>("");
   const [isMarketOpen, setIsMarketOpen] = useState<boolean>(marketOpen());
   
   const approvalKeyRef = useRef<string | null>(null);
@@ -37,11 +32,22 @@ const StockClientPage: React.FC<StockClientProps> = ({ symbol, initialStockData 
   const currentType = "currentPrice";
 
   // ✅ 1. 초기 데이터 설정
-  useEffect(() => {
-    setStockPrice(initialStockData.stockPrice);
-    setPrdyVrss(initialStockData.prdyVrss);
-    setPrdyCtrt(initialStockData.prdyCtrt);
-  }, [initialStockData, stockPrice, prdyVrss, prdyCtrt]);
+  const fetchData = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/stock/current_stock?symbol=${symbol}`);
+      const result = await response.json();
+      if (response.ok) {
+        setStockPrice(result.stckPrpr);
+        setPrdyVrss(result.prdyVrss);
+        setPrdyCtrt(result.prdyCtrt);
+      } else {
+        console.error("Error fetching data:", result.message);
+      }
+    } catch (error) {
+      console.error("API 요청 실패:", error);
+    }
+  }, [symbol]);
+  
 
   // ✅ 2. WebSocket 연결 함수
   const initializeWebSocket = useCallback(async () => {
@@ -62,8 +68,10 @@ const StockClientPage: React.FC<StockClientProps> = ({ symbol, initialStockData 
         sendWsMessage(wsRef.current, subscribeMsg);
 
         onWsMessage(wsRef.current, (data: string) => {
+          console.log("Raw WebSocket data:", data);
           try {
             const parsedData = parseStockData(data, STOCK_TRADE_MAPPING, REQUIRED_STOCK_FIELD);
+            console.log("Parsed data:", parsedData); 
             if (parsedData) {
               setStockPrice(parsedData.stocks.stckPrpr);
               setPrdyVrss(parsedData.stocks.prdyVrss);
@@ -92,21 +100,19 @@ const StockClientPage: React.FC<StockClientProps> = ({ symbol, initialStockData 
   // ✅ 4. 시장이 열려 있을 때 WebSocket 실행
   // ✅ 5. 주식 시장 상태를 1분마다 체크
   useEffect(() => {
-  const interval = setInterval(() => {
-    const marketStatus = marketOpen();
-    setIsMarketOpen(marketStatus);
-    if (marketStatus) {
-      initializeWebSocket();
-    } else {
-      cleanupWebSocket();
-    }
-  }, 60000); 
-
-  return () => {
-    clearInterval(interval);  
-    cleanupWebSocket(); 
-  };
-  }, [symbol, initializeWebSocket, cleanupWebSocket]);
+    fetchData();
+    initializeWebSocket();
+  
+    const interval = setInterval(() => {
+      const marketStatus = marketOpen();
+      setIsMarketOpen(marketStatus);
+    }, 60000); 
+  
+    return () => {
+      clearInterval(interval);  
+      cleanupWebSocket(); 
+    };
+  }, [symbol, fetchData, initializeWebSocket, cleanupWebSocket]);
 
   return (
     <>

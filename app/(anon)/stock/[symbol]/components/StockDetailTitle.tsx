@@ -31,7 +31,6 @@ export default function StockDetailTitle({
   const isPositive = (value: string) => parseFloat(value) > 0;
 
   useEffect(() => {
-    // 주식 이름 가져오는 API 호출
     const fetchStockName = async () => {
       try {
         const response = await fetch(`/api/stock/stock_info?symbol=${symbol}`);

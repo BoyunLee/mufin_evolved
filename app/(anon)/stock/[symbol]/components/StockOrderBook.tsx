@@ -67,7 +67,8 @@ const StockOrderBook = ({ symbol }: StockOrderBookProps) => {
       approvalKeyRef.current = approvalKey;
       usedApiKeyNameRef.current = usedApiKeyName;
 
-      const ws = await connectWs("ws://ops.koreainvestment.com:31000/tryitout/H0STASP0");
+      const ws = await connectWs("wss://mufin.newlecture.com/api31000//tryitout/H0STASP0");
+      
       wsRef.current = ws;
       isConnectedRef.current = true;
 
@@ -77,6 +78,7 @@ const StockOrderBook = ({ symbol }: StockOrderBookProps) => {
         sendWsMessage(wsRef.current, subscribeMsg);
 
         onWsMessage(wsRef.current, (data: string) => {
+          console.log("Raw WebSocket data:", data);
           try {
             const parsedData = parseStockData(data, STOCK_TRADE_ORDERBOOK_MAPPING, REQUIRED_STOCK_ORDERBOOK_FIELD);
             if (parsedData) {
@@ -182,7 +184,7 @@ const StockOrderBook = ({ symbol }: StockOrderBookProps) => {
                   <Price className="ask">{formatNumber(askPrices[5 - i])} 원</Price>
                   <OrderDetails>
                     <OrderBar
-                      className="ask"
+                      $className="ask"
                       width={(askVolumes[5 - i] / totalAskVolume) * 100 || 0}
                     />
                     <Volume $className="ask">
@@ -198,7 +200,7 @@ const StockOrderBook = ({ symbol }: StockOrderBookProps) => {
                   <Price className="bid">{formatNumber(bidPrices[i - 6])} 원</Price>
                   <OrderDetails>
                     <OrderBar
-                      className="bid"
+                      $className="bid"
                       width={(bidVolumes[i - 6] / totalBidVolume) * 100 || 0}
                     />
                     <Volume $className="bid">
