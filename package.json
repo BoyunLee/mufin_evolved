@@ -6,7 +6,7 @@
   "scripts": {
     "generate": "prisma generate",
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "npx prisma generate && next build",
     "start": "next start",
     "lint": "next lint"
   },
