@@ -77,7 +77,6 @@ const TradeActionClient = () => {
         }
   
         const data: StockData = await response.json();
-        console.log("Stock ID and Name:", data);
         setStockId(data.stockId);
         setStockName(data.stockName);
       } catch (error) {
@@ -97,7 +96,6 @@ const TradeActionClient = () => {
       try {
         const walletResponse = await fetch(`/api/tradeaction/buy`);
         const walletData = await walletResponse.json();
-        console.log("Fetched walletData:", walletData);
         setWalletBalance(Number(walletData.cash));
   
         const portfolioResponse = await fetch(`/api/tradeaction/sell?stockId=${stockId}`);

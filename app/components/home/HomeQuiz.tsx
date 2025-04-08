@@ -30,6 +30,8 @@ const HomeQuiz = () => {
                 confirmButton: 'swal-confirm-button',
                 icon: 'swal-icon-custom'
               }
+              }).then(() => {
+                router.push("/login"); // 로그인 페이지로 이동
             });
             return;
           }

@@ -19,4 +19,3 @@ export async function GET(req: NextRequest) {
     return  NextResponse.json({ message: '데이터 가져오기 실패', error: errorMessage }, { status: 500 });
   }
 }
-

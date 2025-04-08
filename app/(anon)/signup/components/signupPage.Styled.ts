@@ -15,10 +15,10 @@ export const Form = styled.form`
   display: flex;
   flex-direction: column;
   background-color: white;
-  padding: 2rem;
+  padding: 1.5rem 2rem;
   border-radius: 10px;
-  width: 80%;
-  gap: 1rem;
+  width: 90%;
+  gap: 1.3rem;
   align-items: center;
 `;
 
@@ -56,12 +56,13 @@ export const EmailContainer = styled.div`
 `;
 
 export const Button = styled.button`
-  width: 70%;
+  width: 100%;
   padding: 0.75rem;
   background-color: var(--primary-color);
   color: white;
   border: none;
   border-radius: 10px;
+  margin-top: 1rem;
 `;
 
 export const Verified = styled.div`

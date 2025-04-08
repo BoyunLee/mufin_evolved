@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Swal from "sweetalert2";
 import "@/app/components/styles/swal-custom.css";
+import { ChevronRight } from "lucide-react";
 
 const Login = () => {
   const [loginId, setloginId] = useState("");
@@ -71,6 +72,10 @@ const Login = () => {
           />
           <Button type="submit">LOGIN</Button>
         </form>
+        <p>
+          <a href="/signup">회원가입</a>
+          <ChevronRight size={20} color="#6d6d6d"/>
+        </p>
       </LoginBox>
     </LoginContainer>
   );

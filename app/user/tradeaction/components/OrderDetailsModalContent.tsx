@@ -61,6 +61,7 @@ const OrderDetailsModalContent = ({
             }
       });
       router.push(`/stock/${symbol}`);
+      sessionStorage.removeItem('initialPrice');
     } catch (error) {
       if (error instanceof Error) {
         Swal.fire({
