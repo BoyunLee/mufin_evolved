@@ -1,3 +1,5 @@
+"use client"
+
 import LoadingScreen from "@/app/(anon)/stock/[symbol]/components/LodingScreen";
 import {
   OrderBar,
