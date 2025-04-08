@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import { SearchBar } from "@/app/components/search/SearchBar";
 import { Container, TopSection, ImageWrapper, InvestmentSection, InvestmentHeader, TitleBox, } from "@/app/components/home/Home.Styled";
