@@ -34,7 +34,7 @@ const StockClientPage: React.FC<StockClientProps> = ({ symbol }) => {
   // ✅ 1. 초기 데이터 설정
   const fetchData = useCallback(async () => {
     try {
-      const response = await fetch(`/api/stock/current_stock?symbol=${symbol}`);
+      const response = await fetch(`/api/stock/current-stock?symbol=${symbol}`);
       const result = await response.json();
       if (response.ok) {
         setStockPrice(result.stckPrpr);
