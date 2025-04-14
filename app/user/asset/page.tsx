@@ -2,13 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight } from "lucide-react";
 import Modal from "@/app/components/modal/Modal";
 import {
     Container,
     InvestmentGoal,
     GoalText,
-    RightContainer2,
     GoalAmount,
     ProgressBarContainer,
     Progress,
@@ -23,6 +21,8 @@ import {
     TransferButton,
     Input,
     Button,
+    GoalRow,
+    ChangeButton
 } from "@/app/user/asset/components/Asset.Styled";
 import InvestmentAmount from "./components/InvestmentAmount";
 import Holdings from "./components/Holdings";
@@ -121,17 +121,16 @@ const Asset = () => {
         <Container>
             {/* 나의 투자 목표 */}
             <InvestmentGoal>
-                <GoalText>나의 투자 목표</GoalText>
-                <RightContainer2>
-                    <GoalAmount>{goalAmount.toLocaleString()} 원</GoalAmount>
-                    <ArrowRight onClick={() => setIsModalOpen(true)} style={{ cursor: "pointer" }} />
-                </RightContainer2>
-            </InvestmentGoal>
+            <GoalText>나의 투자 목표</GoalText>
+            <GoalRow>
+                <GoalAmount>{goalAmount.toLocaleString()} 원</GoalAmount>
+                <ChangeButton onClick={() => setIsModalOpen(true)}>목표 변경</ChangeButton>
+            </GoalRow>
 
-            {/* Progress Bar */}
             <ProgressBarContainer>
                 <Progress $progress={progress}>{`+${progress.toFixed(0)}%`}</Progress>
             </ProgressBarContainer>
+            </InvestmentGoal>
 
             {/* 총 자산 */}
             <TotalAssetsSection>

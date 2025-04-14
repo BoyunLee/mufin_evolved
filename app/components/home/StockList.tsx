@@ -8,13 +8,13 @@ import {
 } from "@/app/components/home/StockList.Styled";
 
 interface StockListProps {
-  categoryId?: string;
+  categoryId: string;
 }
 
 export default function StockList({ categoryId }: StockListProps) {
   const [stocks, setStocks] = useState<StockListResponseDto[]>([]);
 
-  const path = categoryId ? `/api/category?c=${categoryId}` : `/api/home`;
+  const path = `/api/category?c=${categoryId}`;
 
   useEffect(() => {
     const fetchStocks = async () => {

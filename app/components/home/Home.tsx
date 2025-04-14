@@ -1,9 +1,7 @@
-"use client";
-
 import Image from "next/image";
 import { SearchBar } from "@/app/components/search/SearchBar";
 import { Container, TopSection, ImageWrapper, InvestmentSection, InvestmentHeader, TitleBox, } from "@/app/components/home/Home.Styled";
-import StockList from "@/app/components/home/StockList";
+import ServerStockList from "@/app/components/home/ServerStockList";
 import StockCategory from "@/app/components/home/StockCategory";
 import HomeQuiz from "@/app/components/home/HomeQuiz";
 
@@ -29,7 +27,7 @@ export default function Home() {
         </InvestmentHeader>
         <SearchBar />
         <TitleBox>인기종목</TitleBox>
-        <StockList />
+        <ServerStockList />
         <TitleBox>카테고리로 보기</TitleBox>
         <StockCategory /> {/* 카테고리 리스트*/}
       </InvestmentSection>
