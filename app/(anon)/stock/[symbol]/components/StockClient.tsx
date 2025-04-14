@@ -59,7 +59,7 @@ const StockClientPage: React.FC = () => {
       const { approvalKey } = result as { approvalKey: string };
       approvalKeyRef.current = approvalKey;
 
-      const ws = await connectWs("ws://ops.koreainvestment.com:21000/tryitout/H0STCNT0");
+      const ws = await connectWs("wss://ops.koreainvestment.com:21000/tryitout/H0STCNT0");
       wsRef.current = ws;
 
       const subscribeMsg = createMessage(approvalKey, "1", "H0STCNT0", symbol);
