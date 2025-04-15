@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-
 import { Table, TableCell1, TableCell2 } from '@/app/(anon)/stock/[symbol]/components/StockDetail.Styled';
+import LoadingScreen from '@/app/(anon)/stock/[symbol]/components/LodingScreen';
+import ErrorScreen from '@/app/(anon)/stock/[symbol]/components/ErrorScreen'; // ErrorScreen 컴포넌트 추가
 
 interface StockInfoProps {
   symbol: string;
@@ -20,6 +21,8 @@ const StockInfo = ({ symbol }: StockInfoProps) => {
   const [stockData, setStockData] = useState<
     Array<{ label: string; value: string | number }>
   >([]);
+  const [loading, setLoading] = useState(true);  // 로딩 상태
+  const [error, setError] = useState<string | null>(null); // 에러 상태
 
   useEffect(() => {
     const fetchStockData = async () => {
@@ -39,13 +42,19 @@ const StockInfo = ({ symbol }: StockInfoProps) => {
         ];
 
         setStockData(transformedData);
+        setLoading(false); // 데이터 로딩 완료 후 로딩 상태 false로 변경
       } catch (error) {
         console.error('Error fetching stock data:', error);
+        setError('주식 정보를 불러오는 데 실패했습니다.');
+        setLoading(false); // 에러 발생 시 로딩 완료 처리
       }
     };
 
     fetchStockData();
   }, [symbol]);
+
+  if (loading) return <LoadingScreen />;
+  if (error) return <ErrorScreen />;
 
   return (
     <>
