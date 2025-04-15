@@ -20,11 +20,13 @@ export class StockHistoryUseCase {
       const stock = await this.stockRepository.findStockById(item.stockId);
 
       // Date 객체를 사용하여 날짜 포맷팅
-      const formattedDate = new Date(item.createdAt).toLocaleDateString('ko-KR', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      }).replace(/\./g, '.');  // 2025.01.01 형식으로 포맷
+      const formattedDate = item.createdAt
+      ? new Date(item.createdAt).toLocaleDateString('ko-KR', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        })
+      : '날짜 없음';
 
       const [year, month, day] = formattedDate.split('.');  // 년, 월, 일을 분리
       const shortYear = year.slice(2);  // "2025"에서 "20"을 제거하고 "25"만 남깁니다
