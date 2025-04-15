@@ -3,18 +3,19 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
-  userId     String      @id @default(uuid()) @map("user_id")
-  name       String
-  email      String      @unique
-  loginId    String      @unique @map("login_id")
-  password   String
-  createdAt  DateTime    @default(now()) @map("created_at")
-  updatedAt  DateTime    @default(now()) @map("updated_at")
+  userId     String      @id @default(dbgenerated("uuid_generate_v4()")) @map("user_id") @db.Uuid
+  name       String      @db.VarChar
+  email      String      @unique @db.VarChar
+  loginId    String      @unique @map("login_id") @db.VarChar
+  password   String      @db.VarChar
+  createdAt  DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime    @default(now()) @map("updated_at") @db.Timestamptz(6)
   attempt    Attempt?
   histories  History[]
   portfolios Portfolio[]
@@ -25,92 +26,92 @@ model User {
 model Choice {
   choiceId     Int      @id @default(autoincrement()) @map("choice_id")
   questionId   Int      @map("question_id")
-  choiceText   String   @map("choice_text")
+  choiceText   String   @map("choice_text") @db.VarChar
   choiceNumber Int      @map("choice_number")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @default(now()) @map("updated_at")
-  question     Question @relation(fields: [questionId], references: [questionId], onDelete: Cascade)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  question     Question @relation(fields: [questionId], references: [questionId], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model Question {
   questionId   Int      @id @default(autoincrement()) @map("question_id")
-  questionText String   @map("question_text")
+  questionText String   @map("question_text") @db.VarChar
   answer       Int
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @default(now()) @map("updated_at")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
   choices      Choice[]
   records      Record[]
 }
 
 model Record {
   recordId    Int      @id @default(autoincrement()) @map("record_id")
-  userId      String   @map("user_id")
+  userId      String   @map("user_id") @db.Uuid
   questionId  Int      @map("question_id")
-  createdAt   DateTime @default(now()) @map("created_at")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   recordCount Int      @default(1) @map("record_count")
-  updatedAt   DateTime @default(now()) @map("updated_at")
-  question    Question @relation(fields: [questionId], references: [questionId], onDelete: Cascade)
-  user        User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  question    Question @relation(fields: [questionId], references: [questionId], onDelete: Cascade, onUpdate: NoAction)
+  user        User     @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
 
-  @@unique([userId, questionId])
+  @@unique([userId, questionId], map: "user_question_unique")
 }
 
 model History {
-  historyId       Int             @id @default(autoincrement()) @map("history_id")
-  userId          String          @map("user_id")
-  stockId         Int             @map("stock_id")
-  historyQty      Int?            @map("history_qty")
+  historyId       Int              @id @default(autoincrement()) @map("history_id")
+  userId          String           @map("user_id") @db.Uuid
+  stockId         Int              @map("stock_id")
+  historyQty      Int?             @map("history_qty")
   price           Int?
-  transactionType TransactionType @map("transaction_type")
-  createdAt       DateTime        @default(now()) @map("created_at")
-  stocks          Stock           @relation(fields: [stockId], references: [stockId])
-  user            User            @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  createdAt       DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  transactionType TransactionType? @map("transaction_type")
+  stocks          Stock            @relation(fields: [stockId], references: [stockId], onDelete: Cascade, onUpdate: NoAction, map: "FK_Stock")
+  user            User             @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model Stock {
   stockId    Int         @id @default(autoincrement()) @map("stock_id")
   stockCode  String      @unique @map("stock_code") @db.Char(6)
-  stockName  String      @map("stock_name")
-  category   Int?        @default(7)
-  stockImage String?     @map("stock_image")
-  stockOpen  String?     @map("stock_open")
+  stockName  String      @map("stock_name") @db.VarChar
+  category   Int?
+  stockImage String?     @map("stock_image") @db.VarChar
+  stockOpen  String?     @map("stock_open") @db.VarChar
   faceValue  Int         @map("face_value")
   totalShare BigInt      @map("total_share")
-  createdAt  DateTime    @default(now()) @map("created_at")
-  updatedAt  DateTime    @default(now()) @map("updated_at")
+  createdAt  DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime    @default(now()) @map("updated_at") @db.Timestamptz(6)
   history    History[]
   Portfolio  Portfolio[]
 }
 
 model Wallet {
-  userId    String   @id @map("user_id")
-  cash      BigInt   @default(0)
-  account   BigInt   @default(1000000)
-  target    BigInt   @default(2000000)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @map("updated_at")
-  user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  userId    String   @id @map("user_id") @db.Uuid
+  cash      BigInt?  @default(0)
+  account   BigInt?  @default(1000000)
+  target    BigInt?  @default(2000000)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model Portfolio {
   portfolioId Int      @id @default(autoincrement()) @map("portfolio_id")
-  userId      String   @map("user_id")
+  userId      String   @map("user_id") @db.Uuid
   stockId     Int      @map("stock_id")
   stockQty    Int      @map("stock_qty")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @default(now()) @map("updated_at")
   total       BigInt
-  stock       Stock    @relation(fields: [stockId], references: [stockId])
-  user        User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  stock       Stock    @relation(fields: [stockId], references: [stockId], onDelete: NoAction, onUpdate: NoAction)
+  user        User     @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
 
-  @@unique([userId, stockId])
+  @@unique([userId, stockId], map: "user_stock_unique")
 }
 
 model Attempt {
   attemptId Int      @id @default(autoincrement()) @map("attempt_id")
-  userId    String   @unique @map("user_id")
-  quizDate  DateTime @default(now()) @map("quiz_date")
-  user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  userId    String   @unique @map("user_id") @db.Uuid
+  quizDate  DateTime @default(now()) @map("quiz_date") @db.Timestamptz(6)
+  user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
 }
 
 enum TransactionType {

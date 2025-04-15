@@ -14,7 +14,7 @@ export class CheckTodayAttemptUseCase implements ICheckTodayAttemptUseCase{
 
         const attempt = await this.attemptRepository.findQuizDateByUserId(userId);
 
-        if(!attempt) {
+        if(!attempt || !attempt.quizDate) {
             return false;
         }
 
@@ -25,7 +25,4 @@ export class CheckTodayAttemptUseCase implements ICheckTodayAttemptUseCase{
         return attemptDate === todayDate;
 
     }
-
-    
-
 }
