@@ -1,7 +1,7 @@
 # 📖 Mufin: 한입에 쏙 배우는 모의투자 어플
 
 ## 📱 배포 
-[Mufin 이용하기](http://mufin.newlecture.com)
+[Mufin 이용하기](https://mufin-boyun.vercel.app)
 
 ## 📌 프로젝트 개요
 "10대와 주식입문자를 위한 투자 학습 어플리케이션"  
