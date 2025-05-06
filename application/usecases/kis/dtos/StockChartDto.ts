@@ -1,9 +1,10 @@
 export interface StockChartDto {
-    stckBsopDate: string;       // 전일 대비
-    stckCntgHour?: string;      // 주식 체결 시간
-    stckOprc: string;           // 전일 대비율
-    stckHgpr: string;           // 주식 전일 종가
-    stckLwpr: string;           // 누적 거래량
-    stckClpr?: string;           // 전일 대비 부호
-    stckPrpr?: string;          // 주식 현재가
-}
+    stckBsopDate: string;       // 주식 기준일자 (yyyyMMdd)
+    stckCntgHour?: string;      // 체결 시간 (HHmmss, 1분봉 차트에만 존재)
+    stckOprc: string;           // 시가 (Open Price)
+    stckHgpr: string;           // 고가 (High Price)
+    stckLwpr: string;           // 저가 (Low Price)
+    stckClpr?: string;          // 종가 (Close Price, 일/주/월/년 봉에서 사용)
+    stckPrpr?: string;          // 현재가 (Present Price, 1분봉에서 사용)
+  }
+  
