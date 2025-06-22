@@ -6,8 +6,8 @@ export const Container = styled.div`
     flex-direction: column;
     align-items: center;
     width: 100%;
-    padding: 1rem; 
-    gap: 1.25rem; 
+    padding: 0rem 1rem 1rem 1rem; 
+    gap: 1rem; 
 `;
 
 export const TopSection = styled.section`
