@@ -13,7 +13,7 @@ export const OrderBookContainer = styled.div`
 export const OrderBookTable = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 0.85rem;
   margin-top: auto;
   margin-bottom: auto;
 `;
