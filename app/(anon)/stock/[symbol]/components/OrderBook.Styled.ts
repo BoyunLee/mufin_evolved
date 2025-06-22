@@ -8,14 +8,14 @@ export const OrderBookContainer = styled.div`
   display: flex; 
   flex-direction: column; 
   flex-grow: 1; 
-  overflow-y: scroll;
 `;
 
 export const OrderBookTable = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin-top: 5px;
+  gap: 0.85rem;
+  margin-top: auto;
+  margin-bottom: auto;
 `;
 
 export const OrderRow = styled.div`
