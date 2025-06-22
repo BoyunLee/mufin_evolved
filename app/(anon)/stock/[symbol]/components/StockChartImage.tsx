@@ -1,21 +1,23 @@
 "use client";
 
-import { useEffect, useState, useRef } from 'react';
-
+import React, { useEffect, useState, useRef } from 'react';
 import { Chart } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, TimeScale, Tooltip, Legend } from 'chart.js';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  TimeScale,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 import { CandlestickController, CandlestickElement } from 'chartjs-chart-financial';
-import 'chartjs-chart-financial';
 import 'chartjs-adapter-date-fns';
 
 import StockModalContainer from '@/app/(anon)/stock/[symbol]/components/StockModalContainer';
 import DraggableScrollContainer from '@/app/(anon)/stock/[symbol]/components/DraggableScrollContainer';
-import { marketOpen } from '@/utils/getMarketOpen';
 import { ChartImageContainer, ChartSection } from '@/app/(anon)/stock/[symbol]/components/StockDetail.Styled';
-
-import ErrorScreen from '@/app/(anon)/stock/[symbol]/components/ErrorScreen';
 import LoadingScreen from '@/app/(anon)/stock/[symbol]/components/LodingScreen';
-import { StockChartDto } from '@/application/usecases/kis/dtos/StockChartDto';
+import ErrorScreen from '@/app/(anon)/stock/[symbol]/components/ErrorScreen';
 
 ChartJS.register(CategoryScale, LinearScale, CandlestickController, TimeScale, CandlestickElement, Tooltip, Legend);
 
@@ -24,73 +26,57 @@ interface StockChartImageProps {
   activePeriod: string;
 }
 
-interface FinancialDataset {
-  label: string;
-  data: {
-    x: Date;
-    o: number;
-    h: number;
-    l: number;
-    c: number;
-  }[];
-  barThickness?: number;
+interface CandlestickDataItem {
+  x: Date;
+  o: number;
+  h: number;
+  l: number;
+  c: number;
 }
 
 interface ChartData {
-  datasets: FinancialDataset[];
+  datasets: {
+    label: string;
+    data: CandlestickDataItem[];
+    barThickness?: number;
+  }[];
 }
 
-const parseDate = (dateStr: string, timeStr?: string): Date => {
-  const year = parseInt(dateStr.substring(0, 4), 10);
-  const month = parseInt(dateStr.substring(4, 6), 10) - 1;
-  const day = parseInt(dateStr.substring(6, 8), 10);
-  if (timeStr) {
-    const hours = parseInt(timeStr.substring(0, 2), 10);
-    const minutes = parseInt(timeStr.substring(2, 4), 10);
-    const seconds = parseInt(timeStr.substring(4, 6), 10);
-    return new Date(year, month, day, hours, minutes, seconds);
-  }
-  return new Date(year, month, day);
-};
+interface WorkerRequest {
+  symbol: string;
+  activePeriod: string;
+}
 
-const createCandlestickItem = (item: StockChartDto, activePeriod: string) => {
-  const date = parseDate(item.stckBsopDate, activePeriod === '1m' ? item.stckCntgHour : undefined);
-  return {
-    x: date,
-    o: Number(item.stckOprc),
-    h: Number(item.stckHgpr),
-    l: Number(item.stckLwpr),
-    c: Number(activePeriod === '1m' ? item.stckPrpr : item.stckClpr),
-  };
-};
+interface WorkerResponse {
+  candlestickData?: CandlestickDataItem[];
+  error?: string;
+}
 
-
-const StockChartImage = ({ symbol, activePeriod }: StockChartImageProps) => {
+const StockChartImage: React.FC<StockChartImageProps> = ({ symbol, activePeriod }) => {
   const [chartData, setChartData] = useState<ChartData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const workerRef = useRef<Worker | null>(null);
 
   useEffect(() => {
-    const fetchChartData = async () => {
-      setLoading(true);
+    // Worker를 한 번만 생성
+    if (!workerRef.current) {
+      workerRef.current = new Worker(new URL('@/workers/stockChartWorker.ts', import.meta.url));
+    }
+    const worker = workerRef.current;
 
-      try {
-          const response = await fetch(`/api/stock/${symbol}?activePeriod=${activePeriod}`);  // 분봉 차트 API   
+    setLoading(true);
+    setError(null);
 
-        const data = await response.json();
+    const handleMessage = (event: MessageEvent<WorkerResponse>) => {
+      const { candlestickData, error } = event.data;
 
-        let candlestickData: { x: Date; o: number; h: number; l: number; c: number }[] = [];
-
-        if (data) {
-          candlestickData = data
-            .map((item: StockChartDto) => createCandlestickItem(item, activePeriod))
-            .filter(Boolean);
-        } else {
-          console.log('데이터가 없습니다.');
-        }
-
+      if (error) {
+        setError(error);
+        setLoading(false);
+        return;
+      }
+      if (candlestickData) {
         setChartData({
           datasets: [
             {
@@ -100,84 +86,79 @@ const StockChartImage = ({ symbol, activePeriod }: StockChartImageProps) => {
             },
           ],
         });
-      } catch (error) {
-        console.log('차트 데이터 불러오기 오류:', error);
-      } finally {
         setLoading(false);
       }
     };
 
-    fetchChartData();
+    worker.addEventListener('message', handleMessage);
 
-    // 분봉 차트인 경우 1분마다 데이터 요청
-    let interval: NodeJS.Timeout;
-    if (activePeriod === '1m' && marketOpen() ) {
-      interval = setInterval(() => {
-        fetchChartData();
-      }, 60000); 
-    }
+    const message: WorkerRequest = { symbol, activePeriod };
+    worker.postMessage(message);
 
     return () => {
-      if (interval) {
-        clearInterval(interval);
-      }
+      worker.removeEventListener('message', handleMessage);
     };
   }, [symbol, activePeriod]);
 
-  if (loading) return <LoadingScreen />; 
+  console.log('chartData', chartData);
+
+  if (loading) return <LoadingScreen />;
+  if (error) return <ErrorScreen />;
+
   if (!chartData) return <ErrorScreen />;
 
   return (
-    <ChartImageContainer ref={containerRef}>
-      <StockModalContainer isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+    <ChartImageContainer>
+      <StockModalContainer isOpen={false} onClose={() => {}} />
       <DraggableScrollContainer>
-      <ChartSection>
-        <Chart
-          type="candlestick"
-          data={chartData}
-          options={{
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              tooltip: {
-                enabled: true,
-                position: 'average',
-                yAlign: 'bottom',
-                displayColors: false,
-                callbacks: {
-                  label: function (context) {
-                    const { o, h, l, c } = context.raw as { o: number, h: number, l: number, c: number };
-                    return [`시가: ${o}`, `고가: ${h}`, `저가: ${l}`, `종가: ${c}`];
+        <ChartSection>
+          <Chart
+            type="candlestick"
+            data={chartData}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                tooltip: {
+                  enabled: true,
+                  position: 'average',
+                  yAlign: 'bottom',
+                  displayColors: false,
+                  callbacks: {
+                    label: (context) => {
+                      const raw = context.raw as CandlestickDataItem;
+                      return [
+                        `시가: ${raw.o}`,
+                        `고가: ${raw.h}`,
+                        `저가: ${raw.l}`,
+                        `종가: ${raw.c}`,
+                      ];
+                    },
                   },
                 },
-              },
-              legend: {
-                display: false,
-              },
-            },
-            scales: {
-              x: {
-                type: 'time',
-                time: {
-                  unit: false,
+                legend: {
+                  display: false,
                 },
-                offset: false,
               },
-              y: {
-                position: 'right',
+              scales: {
+                x: {
+                  type: 'time',
+                  offset: false,
+                },
+                y: {
+                  position: 'right',
+                },
               },
-            },
-            interaction: {
-              mode: 'point',
-              intersect: false,
-            },
-          }}          
-        />
-      </ChartSection>
+              interaction: {
+                mode: 'point',
+                intersect: false,
+              },
+            }}
+          />
+        </ChartSection>
       </DraggableScrollContainer>
     </ChartImageContainer>
   );
 };
 
 export default StockChartImage;
-
