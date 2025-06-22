@@ -30,8 +30,8 @@ export const IntroBox = styled.div`
     justify-content: space-around;
     align-items: center;
 
-    padding: 1rem; 
-    gap:1rem;
+    padding: 0.7rem; 
+    gap: 0.7rem;
 
     background-color: var(--primary-50);
     border-radius: 10px;
@@ -54,8 +54,8 @@ export const QuizButton = styled.button`
     
     width: 100%;
 
-    padding: 1rem 1rem;
-    gap: 0.625rem;
+    padding: 0.7rem;
+    gap: 0.5rem;
 
     background-color: var(--primary-color);
     color: var(--white-color);

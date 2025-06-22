@@ -64,7 +64,7 @@ const HomeQuiz = () => {
     return(
         <IntroBox>
           <QuizModalContainer isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-          <p>금융 퀴즈를 풀고 포인트를 쌓아 <br /> 실전처럼 투자해보세요!</p>
+          <p>퀴즈를 풀고 자산을 쌓아 <br /> 실전처럼 투자해보세요!</p>
           <QuizButton onClick={handleQuizButtonClick}>
             오늘의 퀴즈 풀기
             <ArrowRight size={18} />
