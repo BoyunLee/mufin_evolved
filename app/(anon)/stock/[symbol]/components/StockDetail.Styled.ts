@@ -45,8 +45,7 @@ export const StockRenderTabContent = styled.section`
   display: flex;
   flex-direction: column;
   flex : 1;
-  gap: 1rem;
-  min-height: 400px;
+  min-height: 24rem;
 `;
 
 // 탭 중 그래프
@@ -59,7 +58,7 @@ export const PeriodItem = styled.button<{ $active?: boolean }>`
   background: none;
   border: none;
   font-size: var(--font-size-base); 
-  padding: 0.5rem 1.6rem; 
+  padding: 0.5rem 1.5rem; 
   color: ${({ $active }) =>
     $active ? 'var(--black-color)' : 'var(--gray-900)'};
   font-weight: ${({ $active }) => ($active ? 'bold' : 'normal')};
@@ -75,7 +74,7 @@ export const DraggableScrollWepper = styled.div<{ $isDragging: boolean }>`
 
 export const ChartSection = styled.div`
   width: 75rem;
-  min-height: 330px;
+  min-height: 19rem;
   height: 100%;
 `;
 
