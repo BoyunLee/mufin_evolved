@@ -11,10 +11,10 @@ export default function Home() {
       <TopSection>
         <ImageWrapper>
           <Image
-            src="/character.svg"
+            src="/character.png"
             alt="character"
             width={135}
-            height={152}
+            height={136}
             priority
           />
         </ImageWrapper>
