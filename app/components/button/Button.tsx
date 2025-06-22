@@ -10,8 +10,8 @@ type ButtonProps = {
 
 const StyledButton = styled.button`
     background-color: var(--primary-color);
-    width: 341px;
-    height: 48px;
+    width: 90%;
+    height: 2.6rem;
     border: none;
     border-radius: 10px;
     color: #fff;

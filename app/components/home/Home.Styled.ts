@@ -85,14 +85,8 @@ export const InvestmentSection = styled.section`
     gap: 1rem;
 `;
 
-export const InvestmentHeader = styled.div`
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-end;
-    
-
+export const InvestmentHeader = styled.div`    
     width: 100%;
-    gap: 0.75rem;
     padding-left: 0.75rem;
 
     h2 {
