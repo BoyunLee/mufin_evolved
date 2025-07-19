@@ -12,9 +12,16 @@ export interface KISStockChartItem {
   stck_prpr: string;
 }
 
+// 한국 시간 기준으로 현재 시간을 가져오는 함수
+const getKoreanTime = (): Date => {
+  const utc = new Date();
+  const offset = 9 * 60;
+  return new Date(utc.getTime() + offset * 60 * 1000);
+};
+
 const getBaselineTime = (now: Date): Date => {
   const marketClose = new Date(now);
-  marketClose.setHours(15, 20, 0, 0);
+  marketClose.setHours(15, 30, 0, 0);
 
   const marketOpen = new Date(now);
   marketOpen.setHours(9, 0, 0, 0);
@@ -24,7 +31,7 @@ const getBaselineTime = (now: Date): Date => {
 };
 
 const getCurrentTime = (offset: number): string => {
-  const now = new Date();
+  const now = getKoreanTime();
   const baseline = getBaselineTime(now);
 
   // offset에 따른 분 단위 차감 (예: offset 1이면 31분 차감)
