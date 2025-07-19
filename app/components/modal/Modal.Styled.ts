@@ -7,7 +7,7 @@ export const Overlay = styled.div`
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 100dvh;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
@@ -20,7 +20,7 @@ export const Content = styled.div`
   padding: 20px;
   border-radius: 8px;
   position: relative;
-  width: 90%;
+  width: 80%;
   max-width: 400px;
 `;
 
