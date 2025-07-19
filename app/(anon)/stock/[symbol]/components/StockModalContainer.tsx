@@ -15,7 +15,7 @@ const StockModalContainer = ({ isOpen, onClose }: StockModalContainerProps) => {
       <StockErrorModal>
         <ClockLoader size={50}/>
         <h5>CLOSE</h5>
-        <p>장 마감 및 휴장일로 서비스 이용이 어렵습니다.</p>
+        <p>장 마감 및 휴장일로 <br></br> 서비스 이용이 어렵습니다.</p>
       </StockErrorModal>
     </Modal>
   );
