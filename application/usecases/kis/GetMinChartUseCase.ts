@@ -21,7 +21,7 @@ const getKoreanTime = (): Date => {
 
 const getBaselineTime = (now: Date): Date => {
   const marketClose = new Date(now);
-  marketClose.setHours(15, 30, 0, 0);
+  marketClose.setHours(15, 20, 0, 0);
 
   const marketOpen = new Date(now);
   marketOpen.setHours(9, 0, 0, 0);

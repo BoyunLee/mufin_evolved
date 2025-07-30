@@ -74,7 +74,7 @@ export const DraggableScrollWepper = styled.div<{ $isDragging: boolean }>`
 `;
 
 export const ChartSection = styled.div`
-  width: 75rem;
+  width: 36rem;
   min-height: 19rem;
   height: 100%;
 `;
