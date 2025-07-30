@@ -91,6 +91,7 @@ const StockOrderBook = ({ symbol }: StockOrderBookProps) => {
                   askp5: parsedData.stocks.askp5,
                   askp7: parsedData.stocks.askp7,
                   askp9: parsedData.stocks.askp9,
+                  askp10: parsedData.stocks.askp10,
                 },
                 bidPrices: {
                   bidp1: parsedData.stocks.bidp1,
@@ -98,6 +99,7 @@ const StockOrderBook = ({ symbol }: StockOrderBookProps) => {
                   bidp5: parsedData.stocks.bidp5,
                   bidp7: parsedData.stocks.bidp7,
                   bidp9: parsedData.stocks.bidp9,
+                  bidp10: parsedData.stocks.bidp10,
                 },
                 askVolumes: {
                   askpRsqn1: parsedData.stocks.askpRsqn1,
@@ -105,6 +107,7 @@ const StockOrderBook = ({ symbol }: StockOrderBookProps) => {
                   askpRsqn5: parsedData.stocks.askpRsqn5,
                   askpRsqn7: parsedData.stocks.askpRsqn7,
                   askpRsqn9: parsedData.stocks.askpRsqn9,
+                  askpRsqn10: parsedData.stocks.askpRsqn10,
                 },
                 bidVolumes: {
                   bidpRsqn1: parsedData.stocks.bidpRsqn1,
@@ -112,6 +115,7 @@ const StockOrderBook = ({ symbol }: StockOrderBookProps) => {
                   bidpRsqn5: parsedData.stocks.bidpRsqn5,
                   bidpRsqn7: parsedData.stocks.bidpRsqn7,
                   bidpRsqn9: parsedData.stocks.bidpRsqn9,
+                  bidpRsqn10: parsedData.stocks.bidpRsqn10,
                 },
                 totalAskVolume: parsedData.stocks.totalAskpRsqn,
                 totalBidVolume: parsedData.stocks.totalBidpRsqn,
@@ -175,35 +179,35 @@ const StockOrderBook = ({ symbol }: StockOrderBookProps) => {
     <>
       <OrderBookContainer>
         <OrderBookTable>
-          {[...Array(10)].map((_, i) => (
+          {[...Array(12)].map((_, i) => (
             <OrderRow key={i}>
-              {i < 5 ? (
+              {i < 6 ? (
                 <>
-                  <Price className="ask">{formatNumber(askPrices[4 - i])} 원</Price>
+                  <Price className="ask">{formatNumber(askPrices[5 - i])} 원</Price>
                   <OrderDetails>
                     <OrderBar
                       $className="ask"
-                      width={(askVolumes[4 - i] / totalAskVolume) * 100 || 0}
+                      width={(askVolumes[5 - i] / totalAskVolume) * 100 || 0}
                     />
                     <Volume $className="ask">
-                      {formatNumber(askVolumes[4 - i])}(
-                      {((askVolumes[4 - i] / totalAskVolume) * 100).toFixed(2)}%)
+                      {formatNumber(askVolumes[5 - i])}(
+                      {((askVolumes[5 - i] / totalAskVolume) * 100).toFixed(2)}%)
                     </Volume>
                   </OrderDetails>
                 </>
               ) : null}
 
-              {i >= 5 ? (
+              {i >= 6 ? (
                 <>
-                  <Price className="bid">{formatNumber(bidPrices[i - 5])} 원</Price>
+                  <Price className="bid">{formatNumber(bidPrices[i - 6])} 원</Price>
                   <OrderDetails>
                     <OrderBar
                       $className="bid"
-                      width={(bidVolumes[i - 5] / totalBidVolume) * 100 || 0}
+                      width={(bidVolumes[i - 6] / totalBidVolume) * 100 || 0}
                     />
                     <Volume $className="bid">
-                      {formatNumber(bidVolumes[i - 5])}(
-                      {((bidVolumes[i - 5] / totalBidVolume) * 100).toFixed(2)}%)
+                      {formatNumber(bidVolumes[i - 6])}(
+                      {((bidVolumes[i - 6] / totalBidVolume) * 100).toFixed(2)}%)
                     </Volume>
                   </OrderDetails>
                 </>
