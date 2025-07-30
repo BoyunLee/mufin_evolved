@@ -100,7 +100,7 @@ const SignupPage = () => {
       const data = await res.json();
       if (res.ok) {
         Swal.fire({
-          title: "인증번호가 이메일로 전송되었습니다!",
+          title: "인증번호가 전송되었습니다",
           icon: "success",
           confirmButtonText: "확인",
           customClass: {

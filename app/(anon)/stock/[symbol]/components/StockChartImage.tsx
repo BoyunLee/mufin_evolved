@@ -82,7 +82,7 @@ const StockChartImage: React.FC<StockChartImageProps> = ({ symbol, activePeriod 
             {
               label: `${symbol} 봉 차트`,
               data: candlestickData,
-              barThickness: 7,
+              barThickness: 3,
             },
           ],
         });
@@ -99,8 +99,6 @@ const StockChartImage: React.FC<StockChartImageProps> = ({ symbol, activePeriod 
       worker.removeEventListener('message', handleMessage);
     };
   }, [symbol, activePeriod]);
-
-  console.log('chartData', chartData);
 
   if (loading) return <LoadingScreen />;
   if (error) return <ErrorScreen />;
@@ -147,6 +145,11 @@ const StockChartImage: React.FC<StockChartImageProps> = ({ symbol, activePeriod 
                 },
                 y: {
                   position: 'right',
+                  ticks: {
+                    font: {
+                      size: 8,
+                    },
+                  },
                 },
               },
               interaction: {
