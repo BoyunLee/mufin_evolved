@@ -90,7 +90,7 @@ export const Table = styled.table`
   margin-top: 10px;
   width: 90%;
   border-collapse: collapse;
-  border: 0.5px solid var(--disabled-color);
+  border: 0.6px solid var(--disabled-color);
   margin-left: auto;
   margin-right : auto;
 `;
@@ -98,14 +98,14 @@ export const Table = styled.table`
 export const TableCell1 = styled.td`
   padding: 10px;
   text-align: left;
-  border: 0.5px solid var(--disabled-color);
+  border: 0.6px solid var(--disabled-color);
   background-color: var(--primary-light);
 `;
 
 export const TableCell2 = styled.td`
   padding: 10px;
   text-align: left;
-  border: 0.5px solid var(--disabled-color);
+  border: 0.6px solid var(--disabled-color);
 `;
 
 // 거래하기 버튼
