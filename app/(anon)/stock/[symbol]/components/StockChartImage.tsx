@@ -19,6 +19,9 @@ import { ChartImageContainer, ChartSection } from '@/app/(anon)/stock/[symbol]/c
 import LoadingScreen from '@/app/(anon)/stock/[symbol]/components/LodingScreen';
 import ErrorScreen from '@/app/(anon)/stock/[symbol]/components/ErrorScreen';
 
+import type { TooltipModel } from 'chart.js';
+import type { Chart as ChartJSInstance } from 'chart.js';
+
 ChartJS.register(CategoryScale, LinearScale, CandlestickController, TimeScale, CandlestickElement, Tooltip, Legend);
 
 interface StockChartImageProps {
@@ -51,6 +54,11 @@ interface WorkerResponse {
   candlestickData?: CandlestickDataItem[];
   error?: string;
 }
+
+interface TooltipWithActive extends TooltipModel<'candlestick'> {
+    _active?: { element: { x: number } }[];
+  }
+
 
 const StockChartImage: React.FC<StockChartImageProps> = ({ symbol, activePeriod }) => {
   const [chartData, setChartData] = useState<ChartData | null>(null);
@@ -100,9 +108,45 @@ const StockChartImage: React.FC<StockChartImageProps> = ({ symbol, activePeriod 
     };
   }, [symbol, activePeriod]);
 
+  const crosshairPlugin = {
+    id: 'customCrosshair',
+    afterDraw: (chart: ChartJSInstance) => {
+      const tooltip = chart.tooltip as TooltipWithActive;
+      const activeElements = tooltip._active;
+      if (!activeElements?.length) return;
+
+      const x = activeElements[0].element.x;
+      const topY = chart.scales.y.top;
+      const bottomY = chart.scales.y.bottom;
+
+      const ctx = chart.ctx;
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x, topY);
+      ctx.lineTo(x, bottomY);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+      ctx.stroke();
+      ctx.restore();
+    },
+  };
+
+  const formatKoreanDate = (date: Date) => {
+    const days = ['일', '월', '화', '수', '목', '금', '토'];
+
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const weekday = days[date.getDay()];
+    const hour = date.getHours().toString().padStart(2, '0');
+    const minute = date.getMinutes().toString().padStart(2, '0');
+
+    return `${year}.${month}.${day}(${weekday}) ${hour}:${minute}`;
+  };
+
+
   if (loading) return <LoadingScreen />;
   if (error) return <ErrorScreen />;
-
   if (!chartData) return <ErrorScreen />;
 
   return (
@@ -120,16 +164,32 @@ const StockChartImage: React.FC<StockChartImageProps> = ({ symbol, activePeriod 
                 tooltip: {
                   enabled: true,
                   position: 'average',
-                  yAlign: 'bottom',
+                  yAlign: 'center',
                   displayColors: false,
+                  backgroundColor: 'white',     
+                  borderColor: 'black',
+                  borderWidth: 0.2,
+                  titleColor: 'black', 
+                  titleFont: {
+                    size: 10,         
+                  },         
+                  bodyColor: 'black',   
+                  bodyFont: {
+                    size: 10,   
+                  },
                   callbacks: {
+                    title: (tooltipItems) => {
+                      const rawDate = tooltipItems[0].parsed.x;
+                      const date = new Date(rawDate);
+                      return formatKoreanDate(date);
+                    },
                     label: (context) => {
                       const raw = context.raw as CandlestickDataItem;
                       return [
-                        `시가: ${raw.o}`,
-                        `고가: ${raw.h}`,
-                        `저가: ${raw.l}`,
-                        `종가: ${raw.c}`,
+                        ` 시가             ${raw.o}`,
+                        ` 고가             ${raw.h}`,
+                        ` 저가             ${raw.l}`,
+                        ` 종가             ${raw.c}`,
                       ];
                     },
                   },
@@ -147,7 +207,7 @@ const StockChartImage: React.FC<StockChartImageProps> = ({ symbol, activePeriod 
                   position: 'right',
                   ticks: {
                     font: {
-                      size: 8,
+                      size: 7,
                     },
                   },
                 },
@@ -157,6 +217,7 @@ const StockChartImage: React.FC<StockChartImageProps> = ({ symbol, activePeriod 
                 intersect: false,
               },
             }}
+            plugins={[crosshairPlugin]}
           />
         </ChartSection>
       </DraggableScrollContainer>
