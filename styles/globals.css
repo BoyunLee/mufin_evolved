@@ -19,6 +19,11 @@ body {
     overflow: auto;
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
 }
 
 ::-webkit-scrollbar {
