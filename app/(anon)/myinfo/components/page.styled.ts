@@ -44,17 +44,3 @@ export const Button = styled.button`
   height: 3rem;
   width: 70%;
 `;
-
-export const ModalStyle = styled.div`
-  p {
-    font-size: var(--font-size-2xl);
-  }
-  margin: 1.5rem;
-`;
-
-export const ButtonStyle = styled.div`
-  margin-top: 2rem;
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-`;
