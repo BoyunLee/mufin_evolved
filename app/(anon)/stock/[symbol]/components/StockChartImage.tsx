@@ -57,7 +57,8 @@ interface WorkerResponse {
 
 interface TooltipWithActive extends TooltipModel<'candlestick'> {
     _active?: { element: { x: number } }[];
-}
+  }
+
 
 const StockChartImage: React.FC<StockChartImageProps> = ({ symbol, activePeriod }) => {
   const [chartData, setChartData] = useState<ChartData | null>(null);
@@ -107,33 +108,26 @@ const StockChartImage: React.FC<StockChartImageProps> = ({ symbol, activePeriod 
     };
   }, [symbol, activePeriod]);
 
-  let lastActiveX: number | null = null;
-
   const crosshairPlugin = {
     id: 'customCrosshair',
     afterDraw: (chart: ChartJSInstance) => {
       const tooltip = chart.tooltip as TooltipWithActive;
       const activeElements = tooltip._active;
+      if (!activeElements?.length) return;
 
-      // 활성 요소가 있으면 해당 x 위치를 저장
-      if (activeElements?.length) {
-        lastActiveX = activeElements[0].element.x;
-      }
+      const x = activeElements[0].element.x;
+      const topY = chart.scales.y.top;
+      const bottomY = chart.scales.y.bottom;
 
-      if (lastActiveX !== null) {
-        const topY = chart.scales.y.top;
-        const bottomY = chart.scales.y.bottom;
-
-        const ctx = chart.ctx;
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(lastActiveX, topY);
-        ctx.lineTo(lastActiveX, bottomY);
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
-        ctx.stroke();
-        ctx.restore();
-      }
+      const ctx = chart.ctx;
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x, topY);
+      ctx.lineTo(x, bottomY);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+      ctx.stroke();
+      ctx.restore();
     },
   };
 
@@ -169,7 +163,7 @@ const StockChartImage: React.FC<StockChartImageProps> = ({ symbol, activePeriod 
               plugins: {
                 tooltip: {
                   enabled: true,
-                  position: 'nearest',
+                  position: 'average',
                   yAlign: 'center',
                   displayColors: false,
                   backgroundColor: 'white',     
@@ -220,7 +214,6 @@ const StockChartImage: React.FC<StockChartImageProps> = ({ symbol, activePeriod 
               },
               interaction: {
                 mode: 'nearest',
-                axis: 'x',
                 intersect: false,
               },
             }}
