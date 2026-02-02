@@ -1,75 +1,89 @@
 import styled from "styled-components";
 import Link from "next/link";
 
+/* 카드 컨테이너 */
 export const Container = styled.div`
-    width: 100%;
-    padding-top: 1.5rem;
+  width: 100%;
+  background: var(--white-color);
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+`;
+
+/* 헤더 */
+export const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 export const Title = styled.h3`
-    font-size: 1.3rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
 `;
+
 export const HistoryButton = styled(Link)`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--primary-500);
-    width: 11rem;
-    padding: 0.2rem;
-    font-size: 0.8rem;
-    //border: 1px solid;
-    border-radius: 5px;
-    color: white;
-    margin-left: auto; /* 추가: 우측 정렬 */
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 
-    cursor: pointer;
+  padding: 0.35rem 0.6rem;
+  font-size: var(--font-size-base);
+  font-weight: 600;
 
-    &:hover {
-        background-color: var(--primary-600);
-    }
+  color: var(--primary-color);
+  background: var(--primary-50);
+  border-radius: 0.5rem;
 `;
+
+/* 리스트형 테이블 */
 export const Table = styled.table`
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
 `;
 
+/* 테이블 헤더 */
 export const TableHeader = styled.th`
-    font-size: 0.9rem;
-    font-weight: bold;
-    padding: 0.75rem;
-    text-align: left;
-    border-bottom: 2px solid var(--gray-100);
-    &:nth-child(3) {
-        text-align: right;
-    }
+  font-size: var(--font-size-base);
+  color: var(--gray-800);
+  padding: 0.5rem 0;
+  text-align: left;
 `;
 
+/* 행 */
 export const TableRow = styled.tr`
-    text-align: left;
-    font-size: 0.95rem;
+  font-size: 0.875rem;
+
+  &:not(:last-child) td {
+    border-bottom: 1px solid var(--gray-50);
+  }
 `;
 
 export const TableCell = styled.td`
-    padding: 0.75rem;
-    text-align: right;
+  padding: 0.75rem 0;
+  vertical-align: middle;
 `;
 
+/* 종목 정보 */
 export const StockInfo = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 `;
 
 export const StockImage = styled.img`
-    width: 1.5rem;
-    height: 1.5rem;
-    border-radius: 50%;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
 `;
 
+/* 수익 텍스트 */
 export const ProfitText = styled.p<{ $isPositive: boolean }>`
-    font-size: 0.7rem;
-    font-weight: bold;
-    color: ${({ $isPositive }) => ($isPositive ? "red" : "blue")};
+  margin-top: 0.15rem;
+  font-size: var(--font-size-md);
+  color: ${({ $isPositive }) => ($isPositive ? "var(--second-color)" : "var(--primary-color)")};
 `;

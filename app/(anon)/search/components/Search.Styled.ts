@@ -85,9 +85,9 @@ export const StockImage = styled(Image)`
 
 export const StockName = styled.div`
     margin-left: 1rem;
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-lg);
     color: var(--black-color);
-    font-weight: 500;
+    font-weight: bold;
 `;
 
 export const HighlightedText = styled.span`

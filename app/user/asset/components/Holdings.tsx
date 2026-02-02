@@ -11,6 +11,7 @@ import {
     StockImage,
     ProfitText,
     HistoryButton,
+    Header,
 } from "@/app/user/asset/components/Holdings.Styled";
 
 interface Holding {
@@ -30,16 +31,18 @@ interface HoldingsProps {
 const Holdings = ({ holdings }: HoldingsProps) => {
     return (
         <Container>
-            <Title>보유 종목</Title>
-            <HistoryButton href="/user/stockhistory">
-                거래내역 확인하러 가기 <ArrowRight size={15} />
-            </HistoryButton>
+            <Header>
+                <Title>보유 종목</Title>
+                <HistoryButton href="/user/stockhistory">
+                    거래내역 조회<ArrowRight size={13} />
+                </HistoryButton>
+            </Header>
             <Table>
                 <thead>
                     <TableRow>
                         <TableHeader>종목</TableHeader>
-                        <TableHeader>수량</TableHeader>
                         <TableHeader>금액</TableHeader>
+                        <TableHeader>수량</TableHeader>
                     </TableRow>
                 </thead>
                 <tbody>
@@ -62,7 +65,6 @@ const Holdings = ({ holdings }: HoldingsProps) => {
                                         {displayName}
                                     </StockInfo>
                                 </TableCell>
-                                <TableCell>{quantity}주</TableCell>
                                 <TableCell>
                                     {total.toLocaleString()} 원
                                     <ProfitText $isPositive={profit >= 0}>
@@ -70,6 +72,7 @@ const Holdings = ({ holdings }: HoldingsProps) => {
                                         {profit.toLocaleString()}원 ({profitRate.toFixed(2)}%)
                                     </ProfitText>
                                 </TableCell>
+                                <TableCell>{quantity}주</TableCell>
                             </TableRow>
                         );
                     })}

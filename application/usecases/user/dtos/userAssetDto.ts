@@ -16,5 +16,5 @@ export interface UserAssetDTO {
     // 예수금
     cash: number;
     // 보유종목 배열 (현재는 미구현이므로 빈 배열)
-    holdings: any[];
+    holdings: unknown[];
 }
