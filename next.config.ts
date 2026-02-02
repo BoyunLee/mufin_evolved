@@ -1,12 +1,4 @@
-import { createRequire } from 'module';
 import type { NextConfig } from 'next';
-
-const require = createRequire(import.meta.url);
-const withPWA = require('next-pwa')({
-  dest: 'public',
-  register: true,
-  skipWaiting: true,
-});
 
 const nextConfig: NextConfig = {
   experimental: {
@@ -17,4 +9,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withPWA(nextConfig);
+export default nextConfig;
