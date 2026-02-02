@@ -1,44 +1,47 @@
+"use client";
+
 import {
-  InvestmentSummary,
-  SummaryRow,
-  SummaryLabel,
-  SummaryValue,
+    Container,
+    Title,
+    Amount,
+    ProfitContainer,
+    ProfitLabel,
+    ProfitValue,
+    CashContainer,
+    CashLabel,
+    CashAmount,
 } from "@/app/user/asset/components/InvestmentAmount.Styled";
 
-interface Props {
-  investmentAmount: number;
-  totalProfit: number;
-  totalProfitRate: number;
-  cash: number;
+interface InvestmentAmountProps {
+    investmentAmount: number;
+    totalProfit: number;
+    totalProfitRate: number;
+    cash: number;
 }
 
-const InvestmentAmount = ({
-  investmentAmount,
-  totalProfit,
-  totalProfitRate,
-  cash,
-}: Props) => {
-  return (
-    <InvestmentSummary>
-      <SummaryRow>
-        <SummaryLabel>투자 금액</SummaryLabel>
-        <SummaryValue>{investmentAmount.toLocaleString()}원</SummaryValue>
-      </SummaryRow>
+const InvestmentAmount = ({ investmentAmount, totalProfit, totalProfitRate, cash }: InvestmentAmountProps) => {
+    return (
+        <Container>
+            {/* 투자 금액 */}
+            <Title>투자 금액</Title>
+            <Amount>{investmentAmount.toLocaleString()} 원</Amount>
 
-      <SummaryRow>
-        <SummaryLabel>총 평가손익</SummaryLabel>
-        <SummaryValue $isPositive={totalProfit >= 0}>
-          {totalProfit >= 0 ? "+" : ""}
-          {totalProfit.toLocaleString()}원 ({totalProfitRate.toFixed(2)}%)
-        </SummaryValue>
-      </SummaryRow>
+            {/* 총 평가손익 */}
+            <ProfitContainer>
+                <ProfitLabel>총 평가손익(원)</ProfitLabel>
+                <ProfitValue $isPositive={totalProfit >= 0}>
+                    {totalProfit >= 0 ? "+" : ""}
+                    {totalProfit.toLocaleString()}원 ({totalProfitRate.toFixed(2)}%)
+                </ProfitValue>
+            </ProfitContainer>
 
-      <SummaryRow>
-        <SummaryLabel>예수금</SummaryLabel>
-        <SummaryValue>{cash.toLocaleString()}원</SummaryValue>
-      </SummaryRow>
-    </InvestmentSummary>
-  );
+            {/* 예수금 */}
+            <CashContainer>
+                <CashLabel>예수금</CashLabel>
+                <CashAmount>{cash.toLocaleString()} 원</CashAmount>
+            </CashContainer>
+        </Container>
+    );
 };
 
 export default InvestmentAmount;

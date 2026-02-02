@@ -18,7 +18,7 @@ export const TransferTitle1 = styled.h2`
 `;
 
 export const TransferTitle2 = styled.h2`
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-3xl);
   font-weight: bold;
   margin-bottom: 1.25rem;
   color: var(--primary-color);
