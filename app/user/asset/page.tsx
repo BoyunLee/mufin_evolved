@@ -10,19 +10,19 @@ import {
     GoalAmount,
     ProgressBarContainer,
     Progress,
-    TotalAssetsSection,
     TotalText,
     TotalValue,
     AccountSection,
-    LeftContainer,
-    RightContainer,
     AccountTitle,
     AccountValue,
+    AccountInfo,
     TransferButton,
     Input,
     Button,
     GoalRow,
-    ChangeButton
+    ChangeButton,
+    TotalSummaryCard,
+    TotalHeader,
 } from "@/app/user/asset/components/Asset.Styled";
 import InvestmentAmount from "./components/InvestmentAmount";
 import Holdings from "./components/Holdings";
@@ -132,48 +132,61 @@ const Asset = () => {
             </ProgressBarContainer>
             </InvestmentGoal>
 
-            {/* 총 자산 */}
-            <TotalAssetsSection>
-                <TotalText>총 자산</TotalText>
-                <TotalValue>{totalAssets.toLocaleString()} 원</TotalValue>
-            </TotalAssetsSection>
+            <TotalSummaryCard>
+                {/* 상단: 총 자산 */}
+                <TotalHeader>
+                    <TotalText>총 자산</TotalText>
+                    <TotalValue>{totalAssets.toLocaleString()} 원</TotalValue>
+                </TotalHeader>
+
+                {/* 하단: 투자 상세 */}
+                <InvestmentAmount
+                    investmentAmount={investmentAmount}
+                    totalProfit={totalProfit}
+                    totalProfitRate={totalProfitRate}
+                    cash={cash}
+                />
+            </TotalSummaryCard> 
 
             {/* 증권계좌 자산 (예수금 + 투자금액) */}
             <AccountSection>
-                <LeftContainer>
+                <AccountInfo>
+                    <AccountValue>
+                        {securitiesAccount.toLocaleString()} 원
+                    </AccountValue>
                     <AccountTitle>증권 계좌 자산</AccountTitle>
-                    <TransferButton onClick={() => router.push("/user/transfer?type=toAccount")}>송금</TransferButton>
-                </LeftContainer>
-                <RightContainer>
-                    <AccountValue>{securitiesAccount.toLocaleString()} 원</AccountValue>
-                </RightContainer>
+                </AccountInfo>
+
+                <TransferButton
+                    onClick={() => router.push("/user/transfer?type=toAccount")}
+                >
+                    송금
+                </TransferButton>
             </AccountSection>
+
 
             {/* 일반계좌 자산 */}
             <AccountSection>
-                <LeftContainer>
+                <AccountInfo>
+                    <AccountValue>
+                        {bankAccount.toLocaleString()} 원
+                    </AccountValue>
                     <AccountTitle>일반 계좌 자산</AccountTitle>
-                    <TransferButton onClick={() => router.push("/user/transfer?type=toCash")}>송금</TransferButton>
-                </LeftContainer>
-                <RightContainer>
-                    <AccountValue>{bankAccount.toLocaleString()} 원</AccountValue>
-                </RightContainer>
-            </AccountSection>
+                </AccountInfo>
 
-            {/* 투자금액, 평가손익, 예수금 컴포넌트 */}
-            <InvestmentAmount
-                investmentAmount={investmentAmount}
-                totalProfit={totalProfit}
-                totalProfitRate={totalProfitRate}
-                cash={cash}
-            />
+                <TransferButton
+                    onClick={() => router.push("/user/transfer?type=toCash")}
+                >
+                    송금
+                </TransferButton>
+            </AccountSection>
 
             {/* 보유종목 컴포넌트 */}
             <Holdings holdings={holdings} />
 
             {/* 투자 목표 설정 모달 */}
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-                <h6>목표 금액 설정</h6>
+                <p>목표 금액 설정</p>
                 <Input type="number" value={tempGoalAmount} onChange={(e) => {
                     const newValue = e.target.value;
                     if (!isNaN(Number(newValue)) && (Number(newValue) >= 0 || newValue === "")) {
